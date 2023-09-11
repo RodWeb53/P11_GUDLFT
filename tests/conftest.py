@@ -12,3 +12,9 @@ def client():
 
 clubs_data = [{'name': 'Test Club 1', 'email': 'test@test.com', 'points': '12'},
               {'name': 'Test Club 2', 'email': 'test2@test.com', 'points': '13'}]
+
+competitions_data = [{
+    "name": "Competition Test",
+    "date": "2023-10-10 10:10:10",
+    "numberOfPlaces": "25",
+}]

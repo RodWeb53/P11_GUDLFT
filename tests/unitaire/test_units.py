@@ -1,4 +1,4 @@
-from tests.conftest import clubs_data
+from tests.conftest import clubs_data, competitions_data
 
 import server
 
@@ -32,3 +32,52 @@ class TestClass:
         data = response.data.decode()
         assert response.status_code == 200
         assert "test@test.com" in data
+
+    def test_purchasePlaces_status_ok(self, client):
+        """
+            Vérification si le code renvoyé est 200
+            lorsque l'on appelle la page "purchasePlaces"
+            et que l'on sélectionne un évenement
+        """
+        response = client.get("/book/Fall%20Classic/Simply%20Lift")
+        assert response.status_code == 200
+
+    def test_order_places_and_enough_points(self, client, mocker):
+        """
+            Vérification si on a assez de point pour commander des places
+        """
+        mocker.patch.object(server, "clubs", clubs_data)
+        mocker.patch.object(server, "competitions", competitions_data)
+
+        club = "Test Club 1"
+        competition = "Competition Test"
+        points = 10
+
+        response = client.post("/purchasePlaces", data={
+            "club": club,
+            "competition": competition,
+            "places": points})
+        data = response.data.decode()
+
+        assert response.status_code == 200
+        assert "Great-booking complete!" in data
+
+    def test_order_places_and_not_enough_points(self, client, mocker):
+        """
+            Vérification si on a pas assez de point pour commander des places
+        """
+        mocker.patch.object(server, "clubs", clubs_data)
+        mocker.patch.object(server, "competitions", competitions_data)
+
+        club = "Test Club 1"
+        competition = "Competition Test"
+        points = 14
+
+        response = client.post("/purchasePlaces", data={
+            "club": club,
+            "competition": competition,
+            "places": points})
+        data = response.data.decode()
+
+        assert response.status_code == 200
+        assert "Vous n&#39;avez pas assez de points pour inscrire le nombre demandé" in data
