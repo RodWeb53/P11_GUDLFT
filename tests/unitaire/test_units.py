@@ -81,3 +81,47 @@ class TestClass:
 
         assert response.status_code == 200
         assert "Vous n&#39;avez pas assez de points pour inscrire le nombre demandé" in data
+
+    def test_limited_to_12_places_maximum(self, client, mocker):
+        """
+            Limitation à 12 places en réservation
+        """
+        mocker.patch.object(server, "clubs", clubs_data)
+        mocker.patch.object(server, "competitions", competitions_data)
+
+        club = "Test Club 2"
+        competition = "Competition Test"
+        points = 13
+
+        response = client.post("/purchasePlaces", data={
+            "club": club,
+            "competition": competition,
+            "places": points})
+        data = response.data.decode()
+        print("response")
+        print(data)
+
+        assert response.status_code == 200
+        assert "Vous ne pouvez pas commander plus de 12 places" in data
+
+    def test_negative_entry(self, client, mocker):
+        """
+            Vérification si on a une saisie négative en réservation de place
+        """
+        mocker.patch.object(server, "clubs", clubs_data)
+        mocker.patch.object(server, "competitions", competitions_data)
+
+        club = "Test Club 2"
+        competition = "Competition Test"
+        points = -5
+
+        response = client.post("/purchasePlaces", data={
+            "club": club,
+            "competition": competition,
+            "places": points})
+        data = response.data.decode()
+        print("response")
+        print(data)
+
+        assert response.status_code == 200
+        assert "Vous ne pouvez pas saisir une quantité négative" in data
