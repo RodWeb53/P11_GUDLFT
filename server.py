@@ -55,10 +55,18 @@ def purchasePlaces():
 
     """Calcul du nombre de points restant"""
     new_points = int(club['points']) - placesRequired
+
     """Vérification si le nombre de points du club est supérieur à la commande"""
+
     error_messages = []
-    if new_points < 0:
+    if int(request.form['places']) < 0:
+        error_message = "Vous ne pouvez pas saisir une quantité négative"
+        error_messages.append(error_message)
+    elif new_points < 0:
         error_message = "Vous n'avez pas assez de points pour inscrire le nombre demandé"
+        error_messages.append(error_message)
+    elif placesRequired > 12:
+        error_message = "Vous ne pouvez pas commander plus de 12 places"
         error_messages.append(error_message)
     else:
         flash('Great-booking complete!')
