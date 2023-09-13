@@ -98,8 +98,6 @@ class TestClass:
             "competition": competition,
             "places": points})
         data = response.data.decode()
-        print("response")
-        print(data)
 
         assert response.status_code == 200
         assert "Vous ne pouvez pas commander plus de 12 places" in data
@@ -120,8 +118,19 @@ class TestClass:
             "competition": competition,
             "places": points})
         data = response.data.decode()
-        print("response")
-        print(data)
 
         assert response.status_code == 200
         assert "Vous ne pouvez pas saisir une quantité négative" in data
+
+    def test_past_date(self, client, mocker):
+        """
+            Vérification si on a une date dans le passé
+        """
+        mocker.patch.object(server, "clubs", clubs_data)
+        mocker.patch.object(server, "competitions", competitions_data)
+
+        response = client.get("/book/Competition_Test_date/Simply%20Lift")
+        data = response.data.decode()
+
+        assert response.status_code == 200
+        assert "Ce concours est dans le passé" in data
