@@ -1,0 +1,12 @@
+{"competitions_data":[
+    {
+        "name": "Competition Test",
+        "date": "2023-10-10 10:10:10",
+        "numberOfPlaces": "25"
+    },
+    {
+        "name": "Competition_Test_date",
+        "date": "2020-10-10 10:10:10",
+        "numberOfPlaces": "25"
+    }
+]}

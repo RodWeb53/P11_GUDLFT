@@ -1,9 +1,30 @@
+import json
+from pathlib import Path
 from tests.conftest import clubs_data, competitions_data
-
+# from server import loadClubs
 import server
+directory = Path(__file__).parent
 
 
 class TestClass:
+    def test_load_json_file_clubs(self):
+        """
+            Vérification de la lecture du fichier JSON
+            pour les données du club
+        """
+        with open(directory / 'clubs.json') as clubs_file:
+            clubs_data = json.load(clubs_file)
+        assert clubs_data != ""
+
+    def test_load_json_file_competitions(self):
+        """
+            Vérification de la lecture du fichier JSON
+            pour les données des compétitions
+        """
+        with open(directory / 'competitions.json') as competitions_file:
+            competitions_data = json.load(competitions_file)
+        assert competitions_data != ""
+
     def test_index_page_status_ok(self, client):
         """
             Vérification si le code renvoyé est 200
@@ -33,14 +54,29 @@ class TestClass:
         assert response.status_code == 200
         assert "test@test.com" in data
 
-    def test_purchasePlaces_status_ok(self, client):
+    def test_purchasePlaces_status_ok(self, client, mocker):
         """
             Vérification si le code renvoyé est 200
             lorsque l'on appelle la page "purchasePlaces"
             et que l'on sélectionne un évenement
         """
-        response = client.get("/book/Fall%20Classic/Simply%20Lift")
+        mocker.patch.object(server, "clubs", clubs_data)
+        mocker.patch.object(server, "competitions", competitions_data)
+        response = client.get("/book/Competition%20Test/Simply%20Lift")
         assert response.status_code == 200
+
+    def test_past_date(self, client, mocker):
+        """
+            Vérification si on a une date dans le passé
+        """
+        mocker.patch.object(server, "clubs", clubs_data)
+        mocker.patch.object(server, "competitions", competitions_data)
+
+        response = client.get("/book/Competition_Test_date/Simply%20Lift")
+        data = response.data.decode()
+
+        assert response.status_code == 200
+        assert "Ce concours est dans le passé" in data
 
     def test_order_places_and_enough_points(self, client, mocker):
         """
@@ -121,16 +157,3 @@ class TestClass:
 
         assert response.status_code == 200
         assert "Vous ne pouvez pas saisir une quantité négative" in data
-
-    def test_past_date(self, client, mocker):
-        """
-            Vérification si on a une date dans le passé
-        """
-        mocker.patch.object(server, "clubs", clubs_data)
-        mocker.patch.object(server, "competitions", competitions_data)
-
-        response = client.get("/book/Competition_Test_date/Simply%20Lift")
-        data = response.data.decode()
-
-        assert response.status_code == 200
-        assert "Ce concours est dans le passé" in data
