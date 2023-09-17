@@ -1,0 +1,17 @@
+{"clubs":[
+    {
+        "name": "Test Club 1",
+        "email": "test@test.com",
+        "points": "12"
+    },
+    {
+        "name": "Test Club 2",
+        "email": "test2@test.com",
+        "points": "13"
+    },
+    {
+        "name": "Simply Lift",
+        "email": "john@simplylift.co",
+        "points": "13"
+    }
+]}

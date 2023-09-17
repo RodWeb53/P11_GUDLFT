@@ -1,6 +1,9 @@
 import json
+from pathlib import Path
 from flask import Flask, render_template, request, redirect, flash, url_for
 import datetime
+
+directory = Path(__file__).parent
 
 
 def loadClubs():
@@ -60,6 +63,28 @@ def book(competition, club):
     return render_template('welcome.html', club=foundClub, competitions=competitions, error_messages=error_messages)
 
 
+def update_club(current_club, new_points):
+    # Enregistrement dans le fichier club.son
+    with open(directory / 'clubs.json', "w") as file:
+        for c in clubs:
+            if c["name"] == current_club["name"]:
+                c["points"] = str(new_points)
+        data = {"clubs": clubs, }
+
+        json.dump(data, file)
+
+
+def update_competition(current_competition):
+    # Enregistrement dans le fichier competitions.json
+    with open(directory / 'competitions.json', "w") as file:
+        for compet in competitions:
+            if compet["name"] == current_competition["name"]:
+                compet["numberOfPlaces"] = str(current_competition["numberOfPlaces"])
+        data = {"competitions": competitions, }
+
+        json.dump(data, file)
+
+
 @app.route('/purchasePlaces', methods=['POST'])
 def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
@@ -76,16 +101,21 @@ def purchasePlaces():
     if int(request.form['places']) < 0:
         error_message = "Vous ne pouvez pas saisir une quantité négative"
         error_messages.append(error_message)
-    elif new_points < 0:
+    if new_points < 0:
         error_message = "Vous n'avez pas assez de points pour inscrire le nombre demandé"
         error_messages.append(error_message)
-    elif placesRequired > 12:
+    if placesRequired > 12:
         error_message = "Vous ne pouvez pas commander plus de 12 places"
         error_messages.append(error_message)
-    else:
+    if not error_messages:
+        update_club(club, new_points)
+        update_competition(competition)
+
         flash('Great-booking complete!')
 
-    return render_template('welcome.html', club=club, competitions=competitions, error_messages=error_messages)
+    return render_template('welcome.html', club=club,
+                           competitions=competitions,
+                           error_messages=error_messages)
 
 
 # TODO: Add route for points display
