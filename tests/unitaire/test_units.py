@@ -157,3 +157,8 @@ class TestClass:
 
         assert response.status_code == 200
         assert "Vous ne pouvez pas saisir une quantité négative" in data
+
+    def test_logout(self, client):
+        response = client.get('/logout')
+
+        assert response.status_code == 302
