@@ -1,9 +1,9 @@
 import json
-from pathlib import Path
+# from pathlib import Path
 from flask import Flask, render_template, request, redirect, flash, url_for
 import datetime
 
-directory = Path(__file__).parent
+# directory = Path(__file__).parent
 
 
 def loadClubs():
@@ -63,26 +63,31 @@ def book(competition, club):
     return render_template('welcome.html', club=foundClub, competitions=competitions, error_messages=error_messages)
 
 
-def update_club(current_club, new_points):
-    # Enregistrement dans le fichier club.son
-    with open(directory / 'clubs.json', "w") as file:
-        for c in clubs:
-            if c["name"] == current_club["name"]:
-                c["points"] = str(new_points)
-        data = {"clubs": clubs, }
+def update_club(current_club, new_points, file_path='clubs.json'):
+    with open(file_path, 'r') as c:
+        clubs = json.load(c)
+    updated_clubs = []
+    for club in clubs['clubs']:
+        if club['name'] == current_club['name']:
+            club['points'] = int(new_points)
+        updated_clubs.append(club)
 
-        json.dump(data, file)
+    with open(file_path, 'w') as c:
+        json.dump({'clubs': updated_clubs}, c, indent=4)
 
 
-def update_competition(current_competition):
+def update_competition(current_competition, file_path='competitions.json'):
     # Enregistrement dans le fichier competitions.json
-    with open(directory / 'competitions.json', "w") as file:
-        for compet in competitions:
-            if compet["name"] == current_competition["name"]:
-                compet["numberOfPlaces"] = str(current_competition["numberOfPlaces"])
-        data = {"competitions": competitions, }
+    with open(file_path, 'r') as comps:
+        listOfCompetitions = json.load(comps)
+    updated_competitions = []
+    for compet in listOfCompetitions['competitions']:
+        if compet["name"] == current_competition["name"]:
+            compet["numberOfPlaces"] = str(current_competition["numberOfPlaces"])
+        updated_competitions.append(compet)
 
-        json.dump(data, file)
+    with open(file_path, 'w') as c:
+        json.dump({'competitions': updated_competitions}, c, indent=3)
 
 
 @app.route('/purchasePlaces', methods=['POST'])
@@ -110,6 +115,7 @@ def purchasePlaces():
     if not error_messages:
         update_club(club, new_points)
         update_competition(competition)
+        club['points'] = new_points
 
         flash('Great-booking complete!')
 
