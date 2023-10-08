@@ -1,9 +1,6 @@
 import json
-# from pathlib import Path
 from flask import Flask, render_template, request, redirect, flash, url_for
 import datetime
-
-# directory = Path(__file__).parent
 
 
 def loadClubs():
@@ -64,6 +61,7 @@ def book(competition, club):
 
 
 def update_club(current_club, new_points, file_path='clubs.json'):
+    # Enregistrement dans le fichier clubs.json
     with open(file_path, 'r') as c:
         clubs = json.load(c)
     updated_clubs = []
@@ -101,7 +99,6 @@ def purchasePlaces():
     new_points = int(club['points']) - placesRequired
 
     """Vérification si le nombre de points du club est supérieur à la commande"""
-
     error_messages = []
     if int(request.form['places']) < 0:
         error_message = "Vous ne pouvez pas saisir une quantité négative"

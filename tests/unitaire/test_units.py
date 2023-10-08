@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 from tests.conftest import clubs_data, competitions_data
-# from server import loadClubs
 import server
 directory = Path(__file__).parent
 
