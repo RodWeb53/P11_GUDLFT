@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 import time
 
 
-def test_index():
+def test_competition_past():
     chrome = webdriver.Chrome()
     """
         Test fonctionnel permettant de vérifier l'acces

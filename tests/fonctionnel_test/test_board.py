@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 import time
 
 
-def test_index():
+def test_board():
     chrome = webdriver.Chrome()
     """
         Test fonctionnel permettant d'aller sur la page board
